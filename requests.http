@@ -1,0 +1,31 @@
+### Create New User
+POST http://127.0.0.1:8080/users
+Content-Type: application/json
+
+{
+}
+
+### Update user
+PUT http://127.0.0.1:8080/users/x5ATVabOCvYhlKDhKFw71tn2zIU2
+Content-Type: application/json
+
+{
+  "Username": "testupdate",
+  "Email": "testupdate@gmail.com",
+  "Picture": "iVBORw0KGgoAAAANSUhEUgAAAAUA\nAAAAFCAIAAAACDbGyAAAAF0lEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO\n9TXL0Y4OHwAAAABJRU5ErkJggg=="
+}
+
+### Delete User
+DELETE http://127.0.0.1:8080/users/x5ATVabOCvYhlKDhKFw71tn2zIU2
+Content-Type: application/json
+
+{
+    
+}
+
+###
+``` 
+*   Separate requests using `###`.
+*   Specify the HTTP method (POST in this case) and the URL.
+*   Include necessary headers, like `Content-Type: application/json` for JSON payloads.
+*   Add the request body after an empty line.
