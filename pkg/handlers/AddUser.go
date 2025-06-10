@@ -12,6 +12,32 @@ import (
 	"github.com/google/uuid"
 )
 
+func (h handler) AddUser(w http.ResponseWriter, r *http.Request) {
+	// Read to request body
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		log.Fatalln(err)
+		w.WriteHeader(500)
+		return
+	}
+	var user models.User
+	json.Unmarshal(body, &user)
+
+	queryStmt := `INSERT INTO users (uid,username,email,picture) VALUES ($1, $2, $3, $4) RETURNING uid;`
+	err = h.DB.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture).Scan(&user.Uid)
+	if err != nil {
+		log.Println("failed to execute query", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode("Created")
+}
+
 func AddUser(w http.ResponseWriter, r *http.Request) {
 	// Read to request body
 	defer r.Body.Close()

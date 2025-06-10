@@ -19,7 +19,31 @@ import (
 // }
 
 func (h handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	uid := vars["uid"]
 
+	// Read request body
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var updatedUser models.User
+	json.Unmarshal(body, &updatedUser)
+
+	queryStmt := `UPDATE users SET username = $2, email = $3, picture = $4 WHERE uid = $1 RETURNING uid;`
+	err = h.DB.QueryRow(queryStmt, &uid, &updatedUser.Username, &updatedUser.Email, &updatedUser.Picture).Scan(&uid)
+	if err != nil {
+		log.Println("failed to execute query", err)
+		w.WriteHeader(500)
+		return
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode("Updated")
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {

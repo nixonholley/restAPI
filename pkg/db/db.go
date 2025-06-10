@@ -46,7 +46,7 @@ func CreateTable(db *sql.DB) {
 		return
 	}
 	if !exists {
-		results, err := db.Query("CREATE TABLE users (uid VARCHAR(36) PRIMARY KEY, username VARCHAR(100) NOT NULL, email VARCHAR(50) NOT NULL, picture VARCHAR(50) NOT NULL);")
+		results, err := db.Query("CREATE TABLE users (uid VARCHAR(36) PRIMARY KEY, username VARCHAR(100) NOT NULL, email VARCHAR(50) NOT NULL, picture TEXT NOT NULL);")
 		if err != nil {
 			fmt.Println("failed to execute query", err)
 			return
@@ -54,7 +54,7 @@ func CreateTable(db *sql.DB) {
 		fmt.Println("Table created successfully", results)
 
 		for _, user := range mocks.User {
-			queryStmt := `INSERT INTO articles (uid,username,email,picture) VALUES ($1, $2, $3, $4) RETURNING id;`
+			queryStmt := `INSERT INTO users (uid,username,email,picture) VALUES ($1, $2, $3, $4) RETURNING uid;`
 
 			err := db.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture).Scan(&user.Uid)
 			if err != nil {
@@ -67,4 +67,13 @@ func CreateTable(db *sql.DB) {
 		fmt.Println("Table 'users' already exists ")
 	}
 
+}
+
+func DeleteTable(db *sql.DB) {
+	var exists bool
+	if err := db.QueryRow("DROP TABLE users;").Scan(&exists); err != nil {
+		fmt.Println("failed to execute query", err)
+		return
+	}
+	fmt.Println("Table users deleted.")
 }
