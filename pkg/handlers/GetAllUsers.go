@@ -7,6 +7,8 @@ import (
 
 	"restAPI/pkg/mocks"
 	"restAPI/pkg/models"
+
+	"github.com/lib/pq"
 )
 
 func (h handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +22,7 @@ func (h handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	var users = make([]models.User, 0)
 	for results.Next() {
 		var user models.User
-		err = results.Scan(&user.Uid, &user.Username, &user.Email, &user.Picture)
+		err = results.Scan(&user.Uid, &user.Username, &user.Email, &user.Picture, pq.Array(&user.Following), pq.Array(&user.Friends))
 		if err != nil {
 			log.Println("failed to scan", err)
 			w.WriteHeader(500)

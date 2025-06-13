@@ -25,8 +25,8 @@ func (h handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.Unmarshal(body, &user)
 
-	queryStmt := `INSERT INTO users (uid,username,email,picture) VALUES ($1, $2, $3, $4) RETURNING uid;`
-	err = h.DB.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture).Scan(&user.Uid)
+	queryStmt := `INSERT INTO users (uid,username,email,picture,following,friends) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uid;`
+	err = h.DB.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture, &user.Following, &user.Friends).Scan(&user.Uid)
 	if err != nil {
 		log.Println("failed to execute query", err)
 		w.WriteHeader(500)

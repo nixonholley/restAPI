@@ -7,7 +7,7 @@ import (
 
 	"restAPI/pkg/mocks"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 )
 
 const (
@@ -46,7 +46,7 @@ func CreateTable(db *sql.DB) {
 		return
 	}
 	if !exists {
-		results, err := db.Query("CREATE TABLE users (uid VARCHAR(36) PRIMARY KEY, username VARCHAR(100) NOT NULL, email VARCHAR(50) NOT NULL, picture TEXT NOT NULL);")
+		results, err := db.Query("CREATE TABLE users (uid VARCHAR(36) PRIMARY KEY, username VARCHAR(100) NOT NULL, email VARCHAR(50) NOT NULL, picture TEXT, following TEXT[] NOT NULL, friends TEXT[] NOT NULL);")
 		if err != nil {
 			fmt.Println("failed to execute query", err)
 			return
@@ -54,9 +54,9 @@ func CreateTable(db *sql.DB) {
 		fmt.Println("Table created successfully", results)
 
 		for _, user := range mocks.User {
-			queryStmt := `INSERT INTO users (uid,username,email,picture) VALUES ($1, $2, $3, $4) RETURNING uid;`
+			queryStmt := `INSERT INTO users (uid,username,email,picture,following,friends) VALUES ($1, $2, $3, $4, $5, $6) RETURNING uid;`
 
-			err := db.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture).Scan(&user.Uid)
+			err := db.QueryRow(queryStmt, &user.Uid, &user.Username, &user.Email, &user.Picture, pq.Array(user.Following), pq.Array(user.Friends)).Scan(&user.Uid)
 			if err != nil {
 				log.Println("failed to execute query", err)
 				return
